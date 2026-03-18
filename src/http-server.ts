@@ -31,7 +31,9 @@ if (HOST !== '0.0.0.0') {
 if (process.env.ALLOWED_HOSTS) {
   allowedHosts.push(...process.env.ALLOWED_HOSTS.split(',').map((h) => h.trim()));
 }
-app.use(hostHeaderValidation(allowedHosts));
+if (!process.env.VERCEL) {
+  app.use(hostHeaderValidation(allowedHosts));
+}
 
 // logger
 app.use((req, _res, next) => {
