@@ -28,6 +28,9 @@ const allowedHosts = ['localhost', '127.0.0.1', '[::1]', `localhost:${PORT}`, `1
 if (HOST !== '0.0.0.0') {
   allowedHosts.push(HOST, `${HOST}:${PORT}`);
 }
+if (process.env.ALLOWED_HOSTS) {
+  allowedHosts.push(...process.env.ALLOWED_HOSTS.split(',').map((h) => h.trim()));
+}
 app.use(hostHeaderValidation(allowedHosts));
 
 // logger
@@ -106,9 +109,13 @@ app.get('/', (_req, res) => {
   });
 });
 
-app.listen(PORT, HOST, () => {
-  /* eslint-disable no-console */
-  console.log(`MCP HTTP server running on http://${HOST}:${PORT}`);
-  console.log(`MCP endpoint: http://${HOST}:${PORT}/mcp`);
-  /* eslint-enable no-console */
-});
+export default app;
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, HOST, () => {
+    /* eslint-disable no-console */
+    console.log(`MCP HTTP server running on http://${HOST}:${PORT}`);
+    console.log(`MCP endpoint: http://${HOST}:${PORT}/mcp`);
+    /* eslint-enable no-console */
+  });
+}
